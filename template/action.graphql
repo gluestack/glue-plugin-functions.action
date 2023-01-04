@@ -1,9 +1,8 @@
 type Mutation {
-  findUserByEmail(email: String!): FindUserByEmailResponse
+  actionName (email: String!): actionNameResponse
 }
 
-type FindUserByEmailResponse {
-  username: String!
-  email: String!
-  access_token: String!
+type actionNameResponse {
+  status: Boolean!
+  message: String!
 }

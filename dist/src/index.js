@@ -43,7 +43,8 @@ exports.GlueStackPlugin = void 0;
 var package_json_1 = __importDefault(require("../package.json"));
 var PluginInstance_1 = require("./PluginInstance");
 var writeEnv_1 = require("./helpers/writeEnv");
-var reWriteFile_1 = __importDefault(require("./helpers/reWriteFile"));
+var reWriteFile_1 = require("./helpers/reWriteFile");
+var replaceSpecialChars_1 = require("./helpers/replaceSpecialChars");
 var GlueStackPlugin = (function () {
     function GlueStackPlugin(app, gluePluginStore) {
         this.type = "stateless";
@@ -72,22 +73,26 @@ var GlueStackPlugin = (function () {
     };
     GlueStackPlugin.prototype.runPostInstall = function (instanceName, target) {
         return __awaiter(this, void 0, void 0, function () {
-            var instance, routerFilePath;
+            var instance, routerFilePath, actionGQLfie;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.app.createPluginInstance(this, instanceName, this.getTemplateFolderPath(), target)];
                     case 1:
                         instance = _a.sent();
-                        if (!instance) return [3, 4];
+                        if (!instance) return [3, 5];
                         return [4, (0, writeEnv_1.writeEnv)(instance)];
                     case 2:
                         _a.sent();
                         routerFilePath = "".concat(instance.getInstallationPath(), "/router.js");
-                        return [4, (0, reWriteFile_1["default"])(routerFilePath, instanceName, 'functions.action')];
+                        return [4, (0, reWriteFile_1.reWriteFile)(routerFilePath, instanceName, 'functions.action')];
                     case 3:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [2];
+                        actionGQLfie = "".concat(instance.getInstallationPath(), "/action.graphql");
+                        return [4, (0, reWriteFile_1.reWriteFile)(actionGQLfie, (0, replaceSpecialChars_1.replaceSpecialChars)(instanceName), 'actionName')];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5: return [2];
                 }
             });
         });

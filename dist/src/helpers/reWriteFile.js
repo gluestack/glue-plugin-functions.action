@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.reWriteFile = void 0;
 var fs_1 = __importDefault(require("fs"));
 var util_1 = __importDefault(require("util"));
 var readFile = util_1["default"].promisify(fs_1["default"].readFile);
@@ -73,5 +74,5 @@ var reWriteFile = function (filePath, instanceName, defaultVar) {
         });
     });
 };
-exports["default"] = reWriteFile;
+exports.reWriteFile = reWriteFile;
 //# sourceMappingURL=reWriteFile.js.map
