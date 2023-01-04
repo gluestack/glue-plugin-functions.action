@@ -1,0 +1,9 @@
+type Mutation {
+  findUserByEmail(email: String!): FindUserByEmailResponse
+}
+
+type FindUserByEmailResponse {
+  username: String!
+  email: String!
+  access_token: String!
+}
