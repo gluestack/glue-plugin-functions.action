@@ -1,5 +1,5 @@
 {
-  "name": "glue-plugin-functions.action",
+  "name": "@gluestack/glue-plugin-functions.action",
   "version": "0.0.1",
   "description": "Create an Application using GlueStack framework",
   "repository": {
