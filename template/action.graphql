@@ -1,5 +1,10 @@
 type Mutation {
-  actionName (email: String!): actionNameResponse
+  actionName (input: actionNameInput!): actionNameResponse
+}
+
+input actionNameInput {
+  email: String!
+  password: String!
 }
 
 type actionNameResponse {
