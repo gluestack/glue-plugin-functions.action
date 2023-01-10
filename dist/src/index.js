@@ -84,7 +84,7 @@ var GlueStackPlugin = (function () {
                     case 2:
                         _a.sent();
                         routerFilePath = "".concat(instance.getInstallationPath(), "/router.js");
-                        return [4, (0, reWriteFile_1.reWriteFile)(routerFilePath, instanceName, 'functions.action')];
+                        return [4, (0, reWriteFile_1.reWriteFile)(routerFilePath, (0, replaceSpecialChars_1.replaceSpecialChars)(instanceName), 'functions.action')];
                     case 3:
                         _a.sent();
                         actionGQLfie = "".concat(instance.getInstallationPath(), "/action.graphql");

@@ -65,7 +65,7 @@ export class GlueStackPlugin implements IPlugin, IManagesInstances, ILifeCycle {
       await writeEnv(instance);
 
       const routerFilePath = `${instance.getInstallationPath()}/router.js`;
-      await reWriteFile(routerFilePath, instanceName, 'functions.action');
+      await reWriteFile(routerFilePath, replaceSpecialChars(instanceName), 'functions.action');
 
       const actionGQLfie = `${instance.getInstallationPath()}/action.graphql`;
       await reWriteFile(actionGQLfie, replaceSpecialChars(instanceName), 'actionName');
