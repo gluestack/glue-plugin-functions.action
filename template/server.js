@@ -17,14 +17,9 @@ app.get('/health-check', (req, res) => {
 app.post('/functions', (req, res) => {
   const { headers, body }  = req;
 
-  console.log({
-    action: { headers, body }
-  });
-
-  // validate headers for authentication &
+  // do something with the headers and body
   // perform your custom business logic
 
-  // return the response
   return res.status(200).json({
     status: true,
     message: 'Ok'
@@ -32,5 +27,5 @@ app.post('/functions', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+  console.log(`Action listening on port ${port}`)
 });
