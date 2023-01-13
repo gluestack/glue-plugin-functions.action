@@ -19,6 +19,7 @@ app.post('/functions', (req, res) => {
 
   // do something with the headers and body
   // perform your custom business logic
+  console.log({ body });
 
   return res.status(200).json({
     status: true,
