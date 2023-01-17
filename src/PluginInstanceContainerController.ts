@@ -99,4 +99,11 @@ export class PluginInstanceContainerController implements IContainerController {
   async build() {
     //
   }
+
+  async watch(): Promise<string[]> {
+    return [
+      'action.setting',
+      'action.graphql'
+    ];
+  }
 }
