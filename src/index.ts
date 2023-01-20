@@ -10,6 +10,7 @@ import IGlueStorePlugin from "@gluestack/framework/types/store/interface/IGluePl
 import { writeEnv } from "./helpers/writeEnv";
 import { reWriteFile } from "./helpers/reWriteFile";
 import { replaceSpecialChars } from "./helpers/replaceSpecialChars";
+import { actionsAdd } from "./commands/actionsAdd";
 
 //Do not edit the name of this class
 export class GlueStackPlugin implements IPlugin, IManagesInstances, ILifeCycle {
@@ -25,7 +26,7 @@ export class GlueStackPlugin implements IPlugin, IManagesInstances, ILifeCycle {
   }
 
   init() {
-    //
+    this.app.addCommand((program: any) => actionsAdd(program, this));
   }
 
   destroy() {
@@ -52,6 +53,10 @@ export class GlueStackPlugin implements IPlugin, IManagesInstances, ILifeCycle {
     return `./backend/functions/${target}`;
   }
 
+  getActionTemplateFolderPath(): string {
+    return `${process.cwd()}/node_modules/${this.getName()}/template-action`;
+  }
+
   async runPostInstall(instanceName: string, target: string) {
     const instance: PluginInstance =
       await this.app.createPluginInstance(
@@ -66,9 +71,6 @@ export class GlueStackPlugin implements IPlugin, IManagesInstances, ILifeCycle {
 
       const routerFilePath = `${instance.getInstallationPath()}/router.js`;
       await reWriteFile(routerFilePath, replaceSpecialChars(instanceName), 'functions.action');
-
-      const actionGQLfie = `${instance.getInstallationPath()}/action.graphql`;
-      await reWriteFile(actionGQLfie, replaceSpecialChars(instanceName), 'actionName');
     }
   }
 

@@ -83,16 +83,9 @@ var PluginInstanceContainerController = (function () {
                         if (_this.portNumber) {
                             return resolve(_this.portNumber);
                         }
-                        var ports = _this.callerInstance.callerPlugin.gluePluginStore.get("ports") || [];
-                        DockerodeHelper.getPort(9000, ports)
-                            .then(function (port) {
-                            _this.setPortNumber(port);
-                            ports.push(port);
-                            _this.callerInstance.callerPlugin.gluePluginStore.set("ports", ports);
-                            return resolve(_this.portNumber);
-                        })["catch"](function (e) {
-                            reject(e);
-                        });
+                        var port = 9000;
+                        _this.setPortNumber(port);
+                        return resolve(_this.portNumber);
                     })];
             });
         });
@@ -136,8 +129,7 @@ var PluginInstanceContainerController = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2, [
-                        'action.setting',
-                        'action.graphql'
+                        'actions'
                     ]];
             });
         });

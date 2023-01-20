@@ -1,4 +1,5 @@
 const glob = require('glob');
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -40,38 +41,40 @@ const middleware = (req, res, next) => {
   });
 };
 
-const functionsPath = path.join(process.cwd(), '/actions');
-const files = glob.sync('**/*.@(js|ts)', {
-  cwd: functionsPath,
-  ignore: [
-    '**/node_modules/**', // ignore node_modules directories
-    '**/_*/**', // ignore files inside directories that start with _
-    '**/_*' // ignore files that start with _
-  ]
-})
+(async () => {
+  const functionsPath = path.join(process.cwd(), '/actions');
+  const files = glob.sync('**/*.@(js|ts)', {
+    cwd: functionsPath,
+    ignore: [
+      '**/node_modules/**', // ignore node_modules directories
+      '**/_*/**', // ignore files inside directories that start with _
+      '**/_*' // ignore files that start with _
+    ]
+  })
+  for (const file of files) {
+    const { default: handler } = await import(path.join(functionsPath, file))
+    // File path relative to the project root directory. Used for logging.
+    const relativePath = path.relative(".", file)
 
-for (const file of files) {
-  const { default: handler } = await import(path.join(functionsPath, file))
+    if (handler) {
+      const route = `/${replaceSpecialChars(file.split("/")[0])}`
 
-  // File path relative to the project root directory. Used for logging.
-  const relativePath = path.relative(process.env.NHOST_PROJECT_PATH, file)
+      try {
+        app.post(route, handler)
+      } catch (error) {
+        console.warn(`Unable to load file ${relativePath} as a Serverless Function`)
+        continue
+      }
 
-  if (handler) {
-    const route = `/${file}`.replace(/(\.ts|\.js)$/, '').replace(/\/index$/, '/')
-
-    try {
-      app.all(route, handler)
-    } catch (error) {
-      console.warn(`Unable to load file ${relativePath} as a Serverless Function`)
-      continue
+      console.log(`Loaded route ${route} from ${relativePath}`)
+    } else {
+      console.warn(`No default export at ${relativePath}`)
     }
-
-    console.log(`Loaded route ${route} from ${relativePath}`)
-  } else {
-    console.warn(`No default export at ${relativePath}`)
   }
-}
+})()
 
 app.listen(port, () => {
   console.log(`Action listening on port ${port}`)
 });
+
+const replaceSpecialChars = (str) => str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
