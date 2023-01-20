@@ -2,57 +2,52 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
 
 <Meta title="Functions.Action Plugin Docs/How It Works" />
 
-
 # How it works
 
 ##
 
-<br/>
+<br />
 
-* ## Working
-  
-  <br/>
-  
-  * Action plugin instance will be running with a **Dapr Sidecar** which
-  is managed by our **Engine** plugin.
-  
-  
-  <br/>
-  
-  
-  
-  * Our action's webhook is defined in the server.ts file, which is our 
-  server for actions's webhook written in **Express.js**.
-  
-  
-  <br/>
-  
-  * Our **Engine** plugin will treat **action plugin instance** as a seperate
-  independent microservice. Behind the scene it will handle everything. Like 
-  providing us baseurl to make our actions interact with the webhook defined in
-  **server.js** file.
-  
-  <br/>
-  
-  * Behind the scene what will happen is, our hasura engine will look for actions.graphql
-  file which is present in root of our **action plugin instance**. From there it will pick
-  up the actions and inside our server.js file we have our webhook defined which will be
-  called for our action.
-  
-  
-  <br/>
+- ## Working
 
-  * If the auth plugin is installed correctly, then we will get a folder named **action**
-  inside our functions folder, where our whole logic of graphql action is written.
+  <br />
 
-  <br/>
-  
-  * Our directory structure for the **action plugin instance** will be something
+  - Action plugin instance will be running with a **Dapr Sidecar** which
+    is managed by our **Engine** plugin.
+
+  <br />
+
+  - Our action's webhook is defined in the server.ts file, which is our
+    server for actions's webhook written in **Express.js**.
+
+  <br />
+
+  - Our **Engine** plugin will treat **action plugin instance** as a seperate
+    independent microservice. Behind the scene it will handle everything. Like
+    providing us baseurl to make our actions interact with the webhook defined in
+    **server.js** file.
+
+  <br />
+
+  - Behind the scene what will happen is, our hasura engine will look for actions.graphql
+    file which is present in root of our **action plugin instance**. From there it will pick
+    up the actions and inside our server.js file we have our webhook defined which will be
+    called for our action.
+
+  <br />
+
+  - If the auth plugin is installed correctly, then we will get a folder named **action**
+    inside our functions folder, where our whole logic of graphql action is written.
+
+  <br />
+
+  - Our directory structure for the **action plugin instance** will be something
     like this:
-    <br/>
+
+    <br />
 
     ```
-     📦action1
+     📦action
       ┣ 📂components
       ┃ ┗ 📜function.yaml
       ┣ 📂node_modules
@@ -66,98 +61,113 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
       ┣ 📜router.js
       ┗ 📜server.js
     ```
-  <br/>
-  <br/>
-  
-  * In order for hasura to interact with webhook of this plugin there is a file named routes.js
-    present in root directory of the instance. If we open that **routes.js**  file, we will see
+
+    <br />
+    <br />
+
+  - In order for hasura to interact with webhook of this plugin there is a file named routes.js
+    present in root directory of the instance. If we open that **routes.js** file, we will see
     a string value attached to a key named **path**, this is the string which is appended after
     our nginx url(http://localhost:9090) which our hasura engine will be using for the webhook.
-  
-    In our case our route.js value will be something like this:
-    
-      ```
-      module.exports = () => [
-          {
-            "path": "/backend/action",
-            "proxy": {
-              "instance": "action:3500",
-              "path": "/v1.0/invoke/action/method/"
-            }
-          }
-       ];
 
-      ```
-    
-    <br/>
-    
+    In our case our route.js value will be something like this:
+
+    ```js
+    module.exports = () => [
+      {
+        path: "/backend/action",
+        proxy: {
+          instance: "action:3500",
+          path: "/v1.0/invoke/action/method/",
+        },
+      },
+    ];
+    ```
+
+    <br />
+
     So in order to access our **action plugin instance** its base url will be
     something like this,
-      
-      
+
     **http://localhost:9090/backend/action**
-  
-  <br/>
-  <br/>
-  
-  * In order to start this plugin we need to run the following command:
-    
-    <br/>
-    
+
+  <br />
+  <br />
+
+  - In order to start this plugin we need to run the following command:
+
+    <br />
+
     ```bash
       $ node glue develop:up
     ```
-    
-    <br/>
+
+    <br />
 
     This command will start running the docker image of all the instances
     and plugin we have created. Here, in this case it will start running
     our **action plugin instance image**, inside our **engine** container.
-  
-  <br/>
-  
-  * In order to check if this plugin is working correctly, we have already
+
+  <br />
+
+  - In order to check if this plugin is working correctly, we have already
     created few endpoints in our server.js which we can check inside server.js
     file.
-  
-  <br/>
-  
-  * For example in order to check health-status of our instance we can send
+
+  <br />
+
+  - For example in order to check health-status of our instance we can send
     **GET Request** to this endpoint:
-    
+
     **http://localhost:9090/backend/action/health-check**
-    
+
     If we get a response like this:
-    
-    
-    
+
     This means that our action plugin instance is running perfectly.
-    
-  <br/>
-  <br/>
 
-* ## Instructions to start development of auth plugin instance
-  
-  <br/>
-  
-  * Inside our **action instance directory** we will see that there is
-  **action.graphql** file inside which we can define all of our actions for
-  hasura engine.
+  <br />
+  <br />
 
-  <br/>
+- ## Instructions to start development of auth plugin instance
 
-  * We can also set whether to define **sync** action or **async** action
-  by going into **action.setting** file.
+  <br />
 
+  - Inside our **action instance directory** we will see that there is
+    **action.graphql** file inside which we can define types for input, output
+    and everything related our actions.
 
+    <br />
 
+  - Below is an example of how we can write types for our **action.graphql** file:
 
+    ```js
+    type Mutation {
+      action (input: actionInput!): actionResponse
+    }
 
+    input actionInput {
+      email: String!
+      password: String!
+    }
 
+    type actionResponse {
+      status: Boolean!
+      message: String!
+    }
 
+    ```
 
+    <br />
 
+  - Inside our **action instance directory** we will see that there is
+    **action.setting** file, inside which we can define our **action execution type**
+    and **action role permissions**.
 
+    <br />
 
+  - Below is an example of how we can configure settings in **action.setting** file:
 
-
+    ```
+    execution = "sync"
+    roles = "admin,staff"
+    ```
