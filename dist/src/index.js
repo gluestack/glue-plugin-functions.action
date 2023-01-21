@@ -45,6 +45,7 @@ var PluginInstance_1 = require("./PluginInstance");
 var writeEnv_1 = require("./helpers/writeEnv");
 var reWriteFile_1 = require("./helpers/reWriteFile");
 var replaceSpecialChars_1 = require("./helpers/replaceSpecialChars");
+var actionsAdd_1 = require("./commands/actionsAdd");
 var GlueStackPlugin = (function () {
     function GlueStackPlugin(app, gluePluginStore) {
         this.type = "stateless";
@@ -53,6 +54,8 @@ var GlueStackPlugin = (function () {
         this.gluePluginStore = gluePluginStore;
     }
     GlueStackPlugin.prototype.init = function () {
+        var _this = this;
+        this.app.addCommand(function (program) { return (0, actionsAdd_1.actionsAdd)(program, _this); });
     };
     GlueStackPlugin.prototype.destroy = function () {
     };
@@ -71,15 +74,18 @@ var GlueStackPlugin = (function () {
     GlueStackPlugin.prototype.getInstallationPath = function (target) {
         return "./backend/functions/".concat(target);
     };
+    GlueStackPlugin.prototype.getActionTemplateFolderPath = function () {
+        return "".concat(process.cwd(), "/node_modules/").concat(this.getName(), "/template-action");
+    };
     GlueStackPlugin.prototype.runPostInstall = function (instanceName, target) {
         return __awaiter(this, void 0, void 0, function () {
-            var instance, routerFilePath, actionGQLfie;
+            var instance, routerFilePath;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.app.createPluginInstance(this, instanceName, this.getTemplateFolderPath(), target)];
                     case 1:
                         instance = _a.sent();
-                        if (!instance) return [3, 5];
+                        if (!instance) return [3, 4];
                         return [4, (0, writeEnv_1.writeEnv)(instance)];
                     case 2:
                         _a.sent();
@@ -87,12 +93,8 @@ var GlueStackPlugin = (function () {
                         return [4, (0, reWriteFile_1.reWriteFile)(routerFilePath, (0, replaceSpecialChars_1.replaceSpecialChars)(instanceName), 'functions.action')];
                     case 3:
                         _a.sent();
-                        actionGQLfie = "".concat(instance.getInstallationPath(), "/action.graphql");
-                        return [4, (0, reWriteFile_1.reWriteFile)(actionGQLfie, (0, replaceSpecialChars_1.replaceSpecialChars)(instanceName), 'actionName')];
-                    case 4:
-                        _a.sent();
-                        _a.label = 5;
-                    case 5: return [2];
+                        _a.label = 4;
+                    case 4: return [2];
                 }
             });
         });

@@ -1,6 +1,6 @@
 {
     "name": "@gluestack/glue-plugin-functions.action",
-    "version": "0.0.13",
+    "version": "0.0.17",
     "description": "Create an Application using GlueStack framework",
     "repository": {
         "type": "git",
@@ -12,10 +12,11 @@
     ],
     "license": "ISC",
     "dependencies": {
-        "@gluestack/glue-plugin-dev-process-manager": "^0.0.x",
-        "@gluestack/glue-plugin-dev-router": "^0.0.x",
+        "@gluestack/framework": "^0.0.x",
+        "@gluestack/glue-plugin-backend-engine": "^0.0.x",
         "@types/node": "^18.11.18",
-        "@gluestack/framework": "^0.0.x"
+        "fs-extra": "^11.1.0",
+        "prompts": "^2.4.2"
     },
     "peerDependencies": {
         "@gluestack/glue-plugin-graphql": "^0.0.x"
