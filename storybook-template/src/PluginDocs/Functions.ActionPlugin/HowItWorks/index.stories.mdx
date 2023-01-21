@@ -8,54 +8,58 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
 
 <br />
 
-- ## Working
+* ## Working
 
   <br />
 
-  - Action plugin instance will be running with a **Dapr Sidecar** which
-    is managed by our **Engine** plugin.
+  * Action plugin instance will be running with a **Dapr Sidecar** which
+    is managed by your **Backend-Engine** plugin.
 
   <br />
 
-  - Our action's webhook is defined in the server.ts file, which is our
+  * Your action's webhook is defined in server.js file, which is your
     server for actions's webhook written in **Express.js**.
 
   <br />
 
-  - Our **Engine** plugin will treat **action plugin instance** as a seperate
+  * Your **Backend-Engine** plugin will treat **action plugin instance** as a seperate
     independent microservice. Behind the scene it will handle everything. Like
-    providing us baseurl to make our actions interact with the webhook defined in
+    providing you baseurl to make your actions interact with the webhook defined in
     **server.js** file.
 
   <br />
 
-  - Behind the scene what will happen is, our hasura engine will look for actions.graphql
-    file which is present in root of our **action plugin instance**. From there it will pick
-    up the actions and inside our server.js file we have our webhook defined which will be
-    called for our action.
+  * Behind the scene what happens is, inside **action instance folder** there is a folder
+    named **actions** and inside that **actions** folder your all action folder will be present
+    which you have created by adding actions from CLI.
+
+    Inside every action folder your **Graphql Engine** will look for action.graphql file and 
+    action.setting file, in order to create actions
 
   <br />
 
-  - If the auth plugin is installed correctly, then we will get a folder named **action**
-    inside our functions folder, where our whole logic of graphql action is written.
+  * If the action plugin is installed correctly, then you will get a folder named **action**
+    inside your functions folder, where your whole logic of graphql action is written.
 
   <br />
 
-  - Our directory structure for the **action plugin instance** will be something
+  * Your directory structure for the **action plugin instance** should be something
     like this:
 
     <br />
 
     ```
      📦action
+      ┣ 📂actions
+      ┃ ┣ 📂<Your Custom Action>
+      ┃ ┃ ┣ 📜action.graphql
+      ┃ ┃ ┣ 📜action.setting
+      ┃ ┃ ┗ 📜handler.js
+      ┃ ┗ 📜README.md
       ┣ 📂components
-      ┃ ┗ 📜function.yaml
-      ┣ 📂node_modules
+      ┃ ┗ 📜*.yaml
       ┣ 📜.env
-      ┣ 📜Dockerfile
       ┣ 📜README.md
-      ┣ 📜action.graphql
-      ┣ 📜action.setting
       ┣ 📜package-lock.json
       ┣ 📜package.json
       ┣ 📜router.js
@@ -65,12 +69,12 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
     <br />
     <br />
 
-  - In order for hasura to interact with webhook of this plugin there is a file named routes.js
-    present in root directory of the instance. If we open that **routes.js** file, we will see
+  * In order for hasura to interact with webhook of this plugin there is a file named **router.js**
+    present in root directory of the action instance. If you open that **router.js** file, you will see
     a string value attached to a key named **path**, this is the string which is appended after
-    our nginx url(http://localhost:9090) which our hasura engine will be using for the webhook.
+    your nginx url(http://localhost:9090) which your hasura engine will be using as webhook.
 
-    In our case our route.js value will be something like this:
+    In my case my router.js value should be something like this:
 
     ```js
     module.exports = () => [
@@ -86,7 +90,7 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
 
     <br />
 
-    So in order to access our **action plugin instance** its base url will be
+    So in order to access my **action plugin instance** its base url should be
     something like this,
 
     **http://localhost:9090/backend/action**
@@ -94,7 +98,7 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
   <br />
   <br />
 
-  - In order to start this plugin we need to run the following command:
+  * In order to start this plugin you need to run the following command:
 
     <br />
 
@@ -105,44 +109,76 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
     <br />
 
     This command will start running the docker image of all the instances
-    and plugin we have created. Here, in this case it will start running
-    our **action plugin instance image**, inside our **engine** container.
+    and plugin you have created. Here, in this case it will start running
+    your **action plugin instance image**, inside your **Bckend-Engine** container.
 
   <br />
 
-  - In order to check if this plugin is working correctly, we have already
-    created few endpoints in our server.js which we can check inside server.js
-    file.
+  - In order to check if this plugin is working correctly, there are
+    few endpoints in your server.js file which you can use to check if this is
+    running perfectly.
 
   <br />
 
-  - For example in order to check health-status of our instance we can send
+  - For example in order to check health-status of my instance I can send
     **GET Request** to this endpoint:
 
     **http://localhost:9090/backend/action/health-check**
 
-    If we get a response like this:
+    If I get a response like this:
 
-    This means that our action plugin instance is running perfectly.
+    ```
+    {
+      "status": true,
+      "message": "Health check performed successfully"
+    }
+    ```
+
+    This means that my action plugin instance is running perfectly.
 
   <br />
   <br />
 
-- ## Instructions to start development of auth plugin instance
+* ## Instructions to start development using this plugin
 
   <br />
 
-  - Inside our **action instance directory** we will see that there is
-    **action.graphql** file inside which we can define types for input, output
-    and everything related our actions.
+  * You can enter commands in your **CLI** to add actions to your **action instance**.
 
     <br />
 
-  - Below is an example of how we can write types for our **action.graphql** file:
+  * Pattern of command for adding action is something like this:
+
+    <br/>
+
+    ```shell
+      $ node glue actions:add <Action-Folder-Name> <Name-of-Action> 
+    ```
+
+    <br />
+
+  * For example iif you want to create an action with folder named **myFirstAction** and action
+  named **fileHandler**. You should enter the following command in the CLI:
+
+    <br/>
+
+    ```shell
+      node glue actions:add myFirstAction fileHandler
+    ```
+
+    <br/>
+
+  * Inside your every **action directory** you will see that there is **action.graphql**
+    file inside which you can define types for input, output and everything related your
+    actions.
+
+    <br />
+
+  * Below is an example of how you can write types for your **action.graphql** file:
 
     ```js
     type Mutation {
-      action (input: actionInput!): actionResponse
+      myFirstAction (input: actionInput!): actionResponse
     }
 
     input actionInput {
@@ -159,13 +195,13 @@ import { Canvas, Meta, Story } from "@storybook/addon-docs";
 
     <br />
 
-  - Inside our **action instance directory** we will see that there is
-    **action.setting** file, inside which we can define our **action execution type**
+  * Inside your **action directory** you will see that there is
+    **action.setting** file, inside which you can define your **action execution type**
     and **action role permissions**.
 
     <br />
 
-  - Below is an example of how we can configure settings in **action.setting** file:
+  * Below is an example of how you can configure settings in **action.setting** file:
 
     ```
     execution = "sync"
