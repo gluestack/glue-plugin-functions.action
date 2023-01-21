@@ -1,0 +1,209 @@
+import { Canvas, Meta, Story } from "@storybook/addon-docs";
+
+<Meta title="Functions.Action Plugin Docs/How It Works" />
+
+# How it works
+
+##
+
+<br />
+
+* ## Working
+
+  <br />
+
+  * Action plugin instance will be running with a **Dapr Sidecar** which
+    is managed by your **Backend-Engine** plugin.
+
+  <br />
+
+  * Your action's webhook is defined in server.js file, which is your
+    server for actions's webhook written in **Express.js**.
+
+  <br />
+
+  * Your **Backend-Engine** plugin will treat **action plugin instance** as a seperate
+    independent microservice. Behind the scene it will handle everything. Like
+    providing you baseurl to make your actions interact with the webhook defined in
+    **server.js** file.
+
+  <br />
+
+  * Behind the scene what happens is, inside **action instance folder** there is a folder
+    named **actions** and inside that **actions** folder your all action folder will be present
+    which you have created by adding actions from CLI.
+
+    Inside every action folder your **Graphql Engine** will look for action.graphql file and 
+    action.setting file, in order to create actions
+
+  <br />
+
+  * If the action plugin is installed correctly, then you will get a folder named **action**
+    inside your functions folder, where your whole logic of graphql action is written.
+
+  <br />
+
+  * Your directory structure for the **action plugin instance** should be something
+    like this:
+
+    <br />
+
+    ```
+     📦action
+      ┣ 📂actions
+      ┃ ┣ 📂<Your Custom Action>
+      ┃ ┃ ┣ 📜action.graphql
+      ┃ ┃ ┣ 📜action.setting
+      ┃ ┃ ┗ 📜handler.js
+      ┃ ┗ 📜README.md
+      ┣ 📂components
+      ┃ ┗ 📜*.yaml
+      ┣ 📜.env
+      ┣ 📜README.md
+      ┣ 📜package-lock.json
+      ┣ 📜package.json
+      ┣ 📜router.js
+      ┗ 📜server.js
+    ```
+
+    <br />
+    <br />
+
+  * In order for hasura to interact with webhook of this plugin there is a file named **router.js**
+    present in root directory of the action instance. If you open that **router.js** file, you will see
+    a string value attached to a key named **path**, this is the string which is appended after
+    your nginx url(http://localhost:9090) which your hasura engine will be using as webhook.
+
+    In my case my router.js value should be something like this:
+
+    ```js
+    module.exports = () => [
+      {
+        path: "/backend/action",
+        proxy: {
+          instance: "action:3500",
+          path: "/v1.0/invoke/action/method/",
+        },
+      },
+    ];
+    ```
+
+    <br />
+
+    So in order to access my **action plugin instance** its base url should be
+    something like this,
+
+    **http://localhost:9090/backend/action**
+
+  <br />
+  <br />
+
+  * In order to start this plugin you need to run the following command:
+
+    <br />
+
+    ```bash
+      $ node glue develop:up
+    ```
+
+    <br />
+
+    This command will start running the docker image of all the instances
+    and plugin you have created. Here, in this case it will start running
+    your **action plugin instance image**, inside your **Bckend-Engine** container.
+
+  <br />
+
+  - In order to check if this plugin is working correctly, there are
+    few endpoints in your server.js file which you can use to check if this is
+    running perfectly.
+
+  <br />
+
+  - For example in order to check health-status of my instance I can send
+    **GET Request** to this endpoint:
+
+    **http://localhost:9090/backend/action/health-check**
+
+    If I get a response like this:
+
+    ```
+    {
+      "status": true,
+      "message": "Health check performed successfully"
+    }
+    ```
+
+    This means that my action plugin instance is running perfectly.
+
+  <br />
+  <br />
+
+* ## Instructions to start development using this plugin
+
+  <br />
+
+  * You can enter commands in your **CLI** to add actions to your **action instance**.
+
+    <br />
+
+  * Pattern of command for adding action is something like this:
+
+    <br/>
+
+    ```shell
+      $ node glue actions:add <Action-Folder-Name> <Name-of-Action> 
+    ```
+
+    <br />
+
+  * For example iif you want to create an action with folder named **myFirstAction** and action
+  named **fileHandler**. You should enter the following command in the CLI:
+
+    <br/>
+
+    ```shell
+      node glue actions:add myFirstAction fileHandler
+    ```
+
+    <br/>
+
+  * Inside your every **action directory** you will see that there is **action.graphql**
+    file inside which you can define types for input, output and everything related your
+    actions.
+
+    <br />
+
+  * Below is an example of how you can write types for your **action.graphql** file:
+
+    ```js
+    type Mutation {
+      myFirstAction (input: actionInput!): actionResponse
+    }
+
+    input actionInput {
+      email: String!
+      password: String!
+    }
+
+    type actionResponse {
+      status: Boolean!
+      message: String!
+    }
+
+    ```
+
+    <br />
+
+  * Inside your **action directory** you will see that there is
+    **action.setting** file, inside which you can define your **action execution type**
+    and **action role permissions**.
+
+    <br />
+
+  * Below is an example of how you can configure settings in **action.setting** file:
+
+    ```
+    execution = "sync"
+    roles = "admin,staff"
+    ```
